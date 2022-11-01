@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="mainPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="720.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.guiidtageditor.AppController">
+   <children>
+      <SplitPane prefHeight="480.0" prefWidth="200.0">
+         <items>
+            <VBox alignment="TOP_CENTER" prefHeight="470.0" prefWidth="198.0">
+               <children>
+                  <Pane fx:id="coverArt" prefHeight="200.0" prefWidth="200.0" />
+                  <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onOpenFileClick" text="Open file" textAlignment="CENTER" />
+                  <Text fx:id="txtFldPath" strokeType="OUTSIDE" strokeWidth="0.0" text="Path" textAlignment="CENTER" wrappingWidth="198.13671875" />
+               </children>
+            </VBox>
+         </items>
+      </SplitPane>
+      <ToggleButton fx:id="btnBackGrnd" layoutX="519.0" layoutY="94.0" mnemonicParsing="false" onAction="#eventBtnBackGrnd" text="ButtonBackground" />
+   </children>
+</AnchorPane>
