@@ -4,6 +4,7 @@ module com.example.guiidtageditor {
 
     requires org.controlsfx.controls;
     requires org.jetbrains.annotations;
+    requires java.desktop;
 
     opens com.example.guiidtageditor to javafx.fxml;
     exports com.example.guiidtageditor;
