@@ -145,8 +145,20 @@ public class Mp3 {
         this.ID3Size = getID3FrameSize(Arrays.copyOfRange(mp3Content, 6, 10));
 
         //get the ID3 version as a string
-        this.StrID3Version = this.ID3Version[0] + "." + this.ID3Version[1];
-
+        this.StrID3Version = "ID3V2.";
+        switch (this.ID3Version[0]) {
+            case 2 -> {
+                this.StrID3Version = "2." + this.ID3Version[1];
+                System.exit(10);
+            }
+            case 3 -> this.StrID3Version = "3." + this.ID3Version[1];
+            case 4 -> {
+                this.StrID3Version = "4." + this.ID3Version[1];
+                System.exit(10);
+            }
+            default -> this.StrID3Version = "Unknown";
+        }
+        //TODO manage flags ffs
         //get the ID3 flags
         getID3Flags(this.ID3Flags);
 

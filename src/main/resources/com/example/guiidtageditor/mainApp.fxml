@@ -20,6 +20,7 @@
                   </ImageView>
                   <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onOpenFileClick" text="Open file" textAlignment="CENTER" />
                   <Text fx:id="txtFldPath" strokeType="OUTSIDE" strokeWidth="0.0" text="Path" textAlignment="CENTER" wrappingWidth="198.13671875" />
+                  <ProgressIndicator fx:id="loadingIcon" prefHeight="26.0" prefWidth="42.0" visible="false" />
                </VBox>
             </children>
          </AnchorPane>
@@ -36,16 +37,12 @@
                                     <children>
                                        <VBox fx:id="infoVbox" layoutX="36.0">
                                           <children>
-                                             <HBox fx:id="boxTrackName" alignment="CENTER" prefHeight="118.0" prefWidth="555.0" styleClass="infoBox">
+                                             <HBox fx:id="boxTrackName" alignment="CENTER" prefHeight="7.0" prefWidth="555.0" styleClass="infoBox">
                                                 <children>
-                                                   <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="trackInfoText" text="Track :" wrappingWidth="99.13671875" HBox.hgrow="NEVER">
-                                                      <HBox.margin>
-                                                         <Insets right="30.0" />
-                                                      </HBox.margin>
-                                                   </Text>
-                                                   <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="trackValueText" text="Text" wrappingWidth="159.89453125" />
+                                                   <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="trackValueText" text="Tags" textAlignment="CENTER" wrappingWidth="159.89453125" />
                                                 </children>
                                              </HBox>
+                                             <HBox fx:id="spacer" alignment="CENTER" layoutX="10.0" layoutY="10.0" prefHeight="22.0" prefWidth="555.0" styleClass="spacer" />
                                           </children>
                                        </VBox>
                                     </children>

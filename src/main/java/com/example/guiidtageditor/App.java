@@ -1,6 +1,7 @@
 package com.example.guiidtageditor;
 
 import javafx.application.Application;
+import javafx.css.CssParser;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -44,32 +45,40 @@ public class App extends Application {
             //AppController.infoVbox.getChildren().add(new Label(frame.toString()));
             String name = frame.getName();
             Text frameName = new Text(identToText(name)+" (" + name+") : ");
-            HBox hBox = new HBox(frameName,new Text(frame.getTextData()));
+            frameName.setStyle("-fx-font-weight: bold");
+            Text frameData = new Text(frame.getTextData());
+            //Add trackInfoText property to values
+
+            Style.applyNameStyle(frameName);
+            Style.applyDataStyle(frameData);
+
+            //TODO
+            HBox hBox = new HBox(frameName,frameData);
+            Style.applyBoxStyle(hBox);
             hBox.alignmentProperty().setValue(Pos.CENTER_LEFT);
             infoVbox.getChildren().add(hBox);
         }
     }
 
+
+
+    private static void setCssStyle(Text frameName, String trackInfoText)
+    {
+        //TODO : osekour
+    }
+
     private static String identToText(String name)
     {//Get readable name from ID3tag ident
-        switch (name) {
-            case "TIT2":
-                return "Title";
-            case "TPE1":
-                return "Artist";
-            case "TALB":
-                return "Album";
-            case "TYER":
-                return "Year";
-            case "TCON":
-                return "Genre";
-            case "TRCK":
-                return "Track";
-            case "APIC":
-                return "Cover Art";
-            default:
-                return name;
-        }
+        return switch (name) {
+            case "TIT2" -> "Title";
+            case "TPE1" -> "Artist";
+            case "TALB" -> "Album";
+            case "TYER" -> "Year";
+            case "TCON" -> "Genre";
+            case "TRCK" -> "Track";
+            case "APIC" -> "Cover Art";
+            default -> name;
+        };
     }
     @Override
     public void start(Stage stage) throws IOException {
