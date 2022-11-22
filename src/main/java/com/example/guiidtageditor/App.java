@@ -1,11 +1,9 @@
 package com.example.guiidtageditor;
 
 import javafx.application.Application;
-import javafx.css.CssParser;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -23,7 +21,7 @@ public class App extends Application {
         launch();
     }
 
-    public static void generateTrack(String path)
+    public static void generateNewTrackObject(String path)
     {
         try {
             track = new Mp3(new File(path));
@@ -40,7 +38,7 @@ public class App extends Application {
         //Get the text field names
         //Get the ID3 tags
         //Set the text fields to the ID3 tags
-        for (Frame frame:track.frameArrayList) {
+        for (V3Frame frame:track.frameArrayList) {
             //AppController.addTagInfo(frame);
             //AppController.infoVbox.getChildren().add(new Label(frame.toString()));
             String name = frame.getName();
@@ -52,14 +50,17 @@ public class App extends Application {
             Style.applyNameStyle(frameName);
             Style.applyDataStyle(frameData);
 
-            //TODO
             HBox hBox = new HBox(frameName,frameData);
             Style.applyBoxStyle(hBox);
             hBox.alignmentProperty().setValue(Pos.CENTER_LEFT);
             infoVbox.getChildren().add(hBox);
         }
     }
+    public static void resetFields(VBox infoVbox) {
+        infoVbox.getChildren().clear();
+        //load base fxml to clear stage for a new track to be displayed
 
+    }
 
 
     private static void setCssStyle(Text frameName, String trackInfoText)
@@ -80,13 +81,14 @@ public class App extends Application {
             default -> name;
         };
     }
+
+
+
     @Override
     public void start(Stage stage) throws IOException {
 
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("mainApp.fxml"));
-
         Scene scene = new Scene(fxmlLoader.load(), 1280, 720);
-
         scene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("style.css")).toExternalForm());
 
         stage.setResizable(false);
@@ -98,8 +100,7 @@ public class App extends Application {
     public String getProjectName() {
         String userDir = System.getProperty("user.dir");
         Path path = Paths.get(userDir);
-        String project = String.valueOf(path.getFileName());
-        return project;
+        return String.valueOf(path.getFileName());
     }
     static boolean isBlank(String string) {
         return string == null || string.isBlank();

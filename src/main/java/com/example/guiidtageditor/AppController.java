@@ -8,6 +8,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 public class AppController {
+    public HBox spacer;
     @FXML
     private AnchorPane mainPane;
 
@@ -52,8 +54,14 @@ public class AppController {
             txtFldPath.setText(path);
             //Change field path to new path
             System.out.println("File path : " + path);
-            App.generateTrack(path);
+            //Delete old tags in Application view
+            App.resetFields(infoVbox);
+
+            //Generate new track object
+            App.generateNewTrackObject(path);
+            //Populate fields with new track info
             App.populateFields(infoVbox);
+            //Populate cover art
             Image img = App.track.findFrameByName("APIC").getImage();
             imgViewCoverArt.setImage(img);
         }else{
@@ -61,7 +69,6 @@ public class AppController {
         }
         loadingIcon.setVisible(false);
     }
-
     private String getPathFromPopup()
     {
         System.out.println("Open File Clicked");

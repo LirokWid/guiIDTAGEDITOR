@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class Mp3 {
     private String ID3FileIdent;
     private byte[] ID3Version;
-    private String StrID3Version;
+    private String StrId3MainVersion;
     private byte[] ID3Flags;
     private byte[] ID3SizeBytes;
     private int ID3Size;
@@ -24,7 +24,8 @@ public class Mp3 {
     private byte[] mp3Content;
 
     //List IDv3 tags in an array
-    ArrayList<Frame> frameArrayList = new ArrayList<>();
+    ArrayList<V3Frame> frameArrayList = new ArrayList<>();
+    private int Id3RevVersion;
 
 
     public byte[] getContent() {
@@ -32,27 +33,39 @@ public class Mp3 {
     }
     public Mp3(File mp3File) throws Exception {
         String extension = mp3File.toString().substring(mp3File.toString().length()-4);
-        if(!extension.equals(".mp3"))
+        if(!extension.equals(".mp3"))//Proceed if file is a mp3 file
         {
             throw new Exception("File in not in .mp3 format");
-        }else {
+        }else{
             this.mp3File = mp3File;
             try {
                 this.mp3Content = getMp3Content();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            //Populate ID3 ident variables
+
+            //Populate ID3 ident variables from ID3 header
             getID3IdentVar();
+
             //Get ID3 tag frame
             this.ID3Frame = Arrays.copyOfRange(this.mp3Content, 10, this.ID3Size - 10);
-            getDataFrames();
-            parseDataFrames();
+            //Get data frame depending on ID3 version
+            switch (this.StrId3MainVersion)
+            {
+                case "ID3V2.2" -> getID3v22Frames();
+                case "ID3V2.3" -> getID3v23Frames();
+                case "ID3V2.4" -> getID3v24Frames();
+                default -> throw new Exception("ID3 version not supported");
+            }
         }
     }
-
-    private void parseDataFrames() throws IOException {
-
+    private void getID3v22Frames()
+    {
+        System.out.println("Parsing ID3v2.2 frames");
+        throw new UnsupportedOperationException("ID3v2.2 not supported yet");
+    }
+    private void getID3v23Frames() throws IOException {
+        System.out.println("Parsing ID3v2.3 frames");
         byte[] frame = this.ID3Frame;
         byte[] tagFrame;
         byte[] frameHeader;
@@ -78,7 +91,7 @@ public class Mp3 {
             tagFrame = Arrays.copyOfRange(frame, 0, bytesNb);
             System.out.println("Frame header : "+new String(ident));
             //add frame to list
-            frameArrayList.add(new Frame(new String(ident),tagFrame));
+            frameArrayList.add(new V3Frame(new String(ident),tagFrame,this.StrId3MainVersion));
             //subtract frame size from frame
             frame = Arrays.copyOfRange(frame, tagFrame.length, frame.length);
 
@@ -91,10 +104,15 @@ public class Mp3 {
         }
 
     }
-
-    public Frame findFrameByName(String name)
+    private void getID3v24Frames()
     {
-        for (Frame frame : frameArrayList) {
+        System.out.println("Parsing ID3v2.4 frames");
+    }
+
+
+    public V3Frame findFrameByName(String name)
+    {
+        for (V3Frame frame : frameArrayList) {
             if(frame.getName().equals(name))
             {
                 return frame;
@@ -102,7 +120,6 @@ public class Mp3 {
         }
         return null;
     }
-
     private boolean isIdentAscii(byte[] ident) {
         for (byte b : ident) {
             if (b < 0x20 || b > 0x7E) {
@@ -145,33 +162,32 @@ public class Mp3 {
         this.ID3Size = getID3FrameSize(Arrays.copyOfRange(mp3Content, 6, 10));
 
         //get the ID3 version as a string
-        this.StrID3Version = "ID3V2.";
         switch (this.ID3Version[0]) {
             case 2 -> {
-                this.StrID3Version = "2." + this.ID3Version[1];
-                System.exit(10);
+                this.StrId3MainVersion = "ID3V2.2";
+                this.Id3RevVersion = this.ID3Version[1];
             }
-            case 3 -> this.StrID3Version = "3." + this.ID3Version[1];
+            case 3 ->
+            {
+                this.StrId3MainVersion = "ID3V2.3";
+                this.Id3RevVersion = this.ID3Version[1];
+            }
             case 4 -> {
-                this.StrID3Version = "4." + this.ID3Version[1];
-                System.exit(10);
+                this.StrId3MainVersion = "ID3V2.4";
+                this.Id3RevVersion = this.ID3Version[1];
             }
-            default -> this.StrID3Version = "Unknown";
+            default -> {
+                this.StrId3MainVersion = "Unknown";
+                throw new IllegalStateException("Unexpected value in tag version : " + this.ID3Version[0]);
+            }
         }
         //TODO manage flags ffs
         //get the ID3 flags
         getID3Flags(this.ID3Flags);
-
     }
 
-    public File getMp3File ()
-    {
-        return mp3File;
-    }
-    public void setMp3File (File mp3File)
-    {
-        this.mp3File = mp3File;
-    }
+
+
 
     private int getID3FrameSize(byte[] sizeField)
     {
@@ -187,17 +203,26 @@ public class Mp3 {
     {
         return Files.readAllBytes(mp3File.toPath());
     }
+
     //Getters
-
-    public String getStrID3Version() {
-        return this.StrID3Version;
+    public String getID3Version()
+    {
+        return this.StrId3MainVersion;
     }
-
-    public int getID3Size() {
+    public File getMp3File ()
+    {
+        return mp3File;
+    }
+    public String getStrId3MainVersion()
+    {
+        return this.StrId3MainVersion;
+    }
+    public int getID3Size()
+    {
         return this.ID3Size;
     }
-
-    public byte[] getID3Frame() {
+    public byte[] getID3Frame()
+    {
         return this.ID3Frame;
     }
 }

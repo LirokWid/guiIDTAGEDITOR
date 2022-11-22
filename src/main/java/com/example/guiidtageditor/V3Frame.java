@@ -5,12 +5,14 @@ import javafx.scene.image.Image;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static java.lang.System.exit;
 
-public class Frame {
+public class V3Frame {
     private String ident;
+    private String frameVersion;
     private Image image;
     private final String[] id3Tags = {"APIC","APIC-1","APIC-2","APIC-3","COMM","GRP1","IPLS","ITNU","MCDI","MVIN","MVNM","OWNE","PCNT","PCST","POPM","PRIV","SYLT","TALB","TBPM","TCAT","TCMP","TCOM","TCON","TCOP","TDAT","TDES","TDLY","TENC","TEXT","TFLT","TGID","TIME","TIT1","TIT2","TIT3","TKEY","TKWD","TLAN","TLEN","TMED","TOAL","TOFN","TOLY","TOPE","TORY","TOWN","TPE1","TPE2","TPE3","TPE4","TPOS","TPUB","TRCK","TRDA","TRSN","TRSO","TSIZ","TSO2","TSOC","TSRC","TSSE","TXXX","TYER","USER","USLT","WCOM","WCOP","WFED","WOAF","WOAR","WOAS","WORS","WPAY","WPUB","WXXX","XDOR","XOLY","XSOA","XSOP","XSOT"};
 
@@ -19,7 +21,7 @@ public class Frame {
 
     private String textData;
 
-    public Frame(String ident, byte[] tagFrame) throws IOException {
+    public V3Frame(String ident, byte[] tagFrame, String strId3MainVersion) throws IOException {
         if (ident.length() != 4) {
             throw new IllegalArgumentException("Frame identifier must be 4 characters long");
         }
@@ -48,12 +50,12 @@ public class Frame {
                     e.printStackTrace();
                     exit(1);
                 }
-
                 break;
             case "TPE1":
                 createTextValue();
                 break;
             default:
+                createTextValue();
                 break;
         }
 
@@ -61,8 +63,27 @@ public class Frame {
 
     private void createTextValue()
     {//TODO: Create a string value from the frame data
-        byte[] data = Arrays.copyOfRange(this.tagFrame, 10, this.tagFrame.length);
-        this.textData = new String(data);
+        //Get encoding from tag start
+        byte encoding = this.tagFrame[11];
+        //print encoding for debug
+        System.out.printf("Encoding: %s%n", encoding);
+        switch (encoding) {
+            case 0 ->
+                //ISO-8859-1
+                    this.textData = new String(this.tagFrame, 11, this.tagFrame.length - 12, StandardCharsets.ISO_8859_1);
+            case 1 ->
+                //UTF-16
+                    this.textData = new String(this.tagFrame, 11, this.tagFrame.length - 12, StandardCharsets.UTF_16);
+            case 2 ->
+                //UTF-16BE
+                    this.textData = new String(this.tagFrame, 11, this.tagFrame.length - 12, StandardCharsets.UTF_16BE);
+            case 3 ->
+                //UTF-8
+                    this.textData = new String(this.tagFrame, 11, this.tagFrame.length - 12, StandardCharsets.UTF_8);
+            default ->
+                //ISO-8859-1
+                    this.textData = new String(this.tagFrame, 11, this.tagFrame.length - 12, StandardCharsets.UTF_8);
+        }
     }
 
     public String getTextData()
